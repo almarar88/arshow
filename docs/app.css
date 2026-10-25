@@ -143,3 +143,30 @@ body:not(.started) #slideWrap,body:not(.started) #live{display:none}
 
 #ovl{position:absolute;inset:0;pointer-events:none;z-index:3}#ovl img,#ovl svg{width:100%;height:100%;display:block}
 .pslide .overlay{position:absolute;inset:0}
+/* Dribbble-inspired: AI orb, warm listening state, floating pill toolbar */
+.orb{position:relative;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fff 0,#dcd3ff 18%,#9877CB 55%,#5b7cf0 100%);box-shadow:0 20px 60px -12px rgba(120,100,230,.55),inset 0 -10px 30px rgba(60,40,160,.35);overflow:hidden;isolation:isolate}
+.orb i{position:absolute;inset:-20%;border-radius:45%;background:conic-gradient(from 0deg,transparent,rgba(179,202,241,.9),transparent 40%,rgba(255,160,220,.7),transparent 75%);filter:blur(10px);mix-blend-mode:screen;animation:spin 7s linear infinite}
+.orb i:nth-child(2){animation-duration:11s;animation-direction:reverse;opacity:.8}
+.orb i:nth-child(3){inset:10%;background:radial-gradient(circle at 50% 30%,rgba(255,255,255,.75),transparent 60%);animation:breathe 4s ease-in-out infinite;filter:blur(4px)}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes breathe{50%{transform:scale(1.15) translateY(4px);opacity:.6}}
+.big-orb{width:132px;height:132px;margin-bottom:26px;animation:float 6s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-8px) scale(1.03)}}
+#home::before{content:"";position:absolute;width:420px;height:420px;top:8%;left:50%;transform:translateX(-50%);background:radial-gradient(circle,rgba(152,119,203,.18),rgba(91,124,240,.08) 45%,transparent 70%);z-index:-1;filter:blur(10px)}
+#home h1{background:linear-gradient(90deg,var(--fg),#6b55c9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.t-dark #home h1,.t-night #home h1{background:linear-gradient(90deg,#fff,#b3a6e0);-webkit-background-clip:text;background-clip:text}
+.primary{background:linear-gradient(135deg,#5b7cf0,#8a63d2);box-shadow:0 14px 34px -10px rgba(110,90,220,.6)}
+.mic{background:linear-gradient(135deg,#5b7cf0,#8a63d2);box-shadow:0 10px 28px -10px rgba(110,90,220,.7);position:relative;overflow:visible}
+.mic .orb.mini{width:30px;height:30px;flex:none;box-shadow:none;margin-inline-start:-6px}
+.mic .orb.mini+svg{display:none}
+body.listening .mic{background:linear-gradient(135deg,#ff8a5c,#ff4f7b);box-shadow:0 10px 30px -8px rgba(255,100,90,.7)}
+body.listening .mic .orb{background:radial-gradient(circle at 32% 28%,#fff 0,#ffe0c2 20%,#ff9a5c 60%,#ff4f7b 100%);animation:listen 1.1s ease-in-out infinite}
+body.listening .mic::after{content:"";position:absolute;inset:-6px;border-radius:33px;border:2px solid rgba(255,110,100,.45);animation:ring 1.6s ease-out infinite}
+@keyframes listen{50%{transform:scale(1.18)}}@keyframes ring{from{opacity:1;transform:scale(.96)}to{opacity:0;transform:scale(1.12)}}
+body.thinking .mic .orb i{animation-duration:1.4s}
+.card,.big{position:relative;overflow:hidden}
+.card::before,.big::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 80% at 85% 0%,rgba(255,255,255,.38),transparent 55%);pointer-events:none}
+.card::after,.big::after{content:"";position:absolute;width:70px;height:70px;border-radius:50%;left:-18px;top:-18px;background:rgba(255,255,255,.14)}
+.stat,.chart,.drawb,.diag,.icon,table{box-shadow:0 1px 0 rgba(255,255,255,.6) inset,0 10px 30px -18px rgba(40,30,90,.35)}
+#drawbar{margin:0 10px calc(10px + env(safe-area-inset-bottom));border:1px solid var(--line);border-radius:28px;box-shadow:0 18px 40px -16px rgba(30,20,80,.35);padding:10px}
+.round.on{background:linear-gradient(135deg,#5b7cf0,#8a63d2)}
+.tb.done{background:linear-gradient(135deg,#5b7cf0,#8a63d2)}

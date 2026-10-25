@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="app.css">
 </head>
 <body class="t-light">
@@ -58,6 +58,8 @@
   </div>
 
   <footer id="dock" hidden>
+    <div id="chips"></div>
+    <div id="modeSeg" role="tablist"><button data-m="summary" class="on">✨ عرض ذكي</button><button data-m="write">✍️ وضع الكتابة</button></div>
     <div id="status"><span class="dot"></span><span id="statusText">متوقف</span></div>
     <div class="dockrow">
       <button class="round" id="bDraw" aria-label="رسم بالإصبع"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/></svg></button>
@@ -76,6 +78,7 @@
     <div id="thumbs"></div>
     <h3>العرض</h3>
     <label class="sw"><span>إظهار النص الحرفي بدل التلخيص</span><input type="checkbox" id="rawToggle"><i></i></label>
+    <label class="sw"><span>خط عربي أنيق (أميري) في وضع الكتابة</span><input type="checkbox" id="calliToggle"><i></i></label>
     <div class="themes" id="themes"></div>
     <h3>العرض المحفوظ</h3>
     <div class="acts">
@@ -89,11 +92,14 @@
       <li>«لون أزرق» · «أربع بطاقات» · «بطاقة ذهبية»</li>
       <li>«ارسم لي صقر» · «ارسم مخطط لخطوات التسجيل»</li>
       <li>«المبيعات: يناير ١٠٠ وفبراير ١٥٠ ومارس ٢٠٠»</li>
+      <li>«شل الثالثة» · «خلها حمرا» · «كبرها شوي» · «زيد بطاقة»</li>
+      <li>«سو لي عرض عن الصقارة» · «وضع الكتابة»</li>
       <li>«الوضع الليلي» · «تراجع» · «الشريحة التالية» · «امسح كل شيء»</li>
     </ul>
   </div>
 </div>
 <div id="toast"></div>
+<div id="heard"></div>
 <div id="print"></div>
 <script src="lib.js"></script>
 <script src="app.js"></script>

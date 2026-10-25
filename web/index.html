@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>اعرض بصوتك</title>
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="اعرض بصوتك">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+</head>
+<body class="t-light">
+<div id="app">
+  <header id="top">
+    <button class="ib" id="bMenu" aria-label="القائمة"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <div id="nav">
+      <button class="ib sm" id="bPrev" aria-label="السابق"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+      <span id="counter">١ / ١</span>
+      <button class="ib sm" id="bNext" aria-label="التالي"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+    </div>
+    <button class="ib" id="bUndo" aria-label="تراجع"><svg viewBox="0 0 24 24"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 010 12h-3"/></svg></button>
+  </header>
+
+  <main id="stage">
+    <section id="home">
+      <div class="logo">🎙️</div>
+      <h1>جاهز للعرض</h1>
+      <p>تحدّث، وسأحوّل كلامك إلى شرائح أنيقة: نقاط وبطاقات ورسوم بيانية ورسومات.</p>
+      <button id="bStart" class="primary">ابدأ الاستماع</button>
+      <button id="bTypeStart" class="ghost">أو اكتب بدل التحدث</button>
+      <p id="unsupported" class="note" hidden>التعرّف على الصوت غير متاح في هذا المتصفح. استخدم Safari على iPhone أو Chrome، أو اكتب أوامرك نصًّا.</p>
+    </section>
+    <div id="slideWrap"><article id="slide"></article></div>
+    <div id="ovl"></div>
+    <div id="live" aria-live="polite"></div>
+    <canvas id="ink" hidden></canvas>
+  </main>
+
+  <div id="drawbar" hidden>
+    <div class="row" id="penColors"></div>
+    <div class="row">
+      <button class="tb sz on" data-w="4"><i style="width:6px;height:6px"></i></button>
+      <button class="tb sz" data-w="9"><i style="width:11px;height:11px"></i></button>
+      <button class="tb sz" data-w="18"><i style="width:17px;height:17px"></i></button>
+      <button class="tb" id="bEraser" aria-label="ممحاة">🧽</button>
+      <button class="tb" id="bInkUndo" aria-label="تراجع">↩︎</button>
+      <button class="tb" id="bInkClear" aria-label="مسح">🗑️</button>
+      <button class="tb wide" id="bTidy">✨ ترتيب</button>
+      <button class="tb wide done" id="bInkDone">تم</button>
+    </div>
+  </div>
+
+  <footer id="dock" hidden>
+    <div id="status"><span class="dot"></span><span id="statusText">متوقف</span></div>
+    <div class="dockrow">
+      <button class="round" id="bDraw" aria-label="رسم بالإصبع"><svg viewBox="0 0 24 24"><path d="M4 20l4-1 11-11-3-3L5 16z"/><path d="M14 6l3 3"/></svg></button>
+      <button id="bMic" class="mic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg><span id="micLabel">ابدأ الاستماع</span></button>
+      <button class="round" id="bKbd" aria-label="كتابة"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M7 10h1M11 10h1M15 10h2M7 14h10"/></svg></button>
+    </div>
+    <form id="typeForm" hidden><input id="typeIn" placeholder="اكتب جملة أو أمرًا… مثل: ارسم لي شجرة" autocomplete="off" enterkeyhint="send"><button>إرسال</button></form>
+  </footer>
+</div>
+
+<div id="sheet" hidden>
+  <div class="scrim" data-close></div>
+  <div class="panel">
+    <div class="grab"></div>
+    <h3>الشرائح</h3>
+    <div id="thumbs"></div>
+    <h3>العرض</h3>
+    <label class="sw"><span>إظهار النص الحرفي بدل التلخيص</span><input type="checkbox" id="rawToggle"><i></i></label>
+    <div class="themes" id="themes"></div>
+    <h3>العرض المحفوظ</h3>
+    <div class="acts">
+      <button id="bSave">💾 حفظ</button>
+      <button id="bPdf">📄 تصدير PDF</button>
+      <button id="bNew">✨ عرض جديد</button>
+    </div>
+    <div id="saved"></div>
+    <h3>جرّب أن تقول</h3>
+    <ul class="tips">
+      <li>«لون أزرق» · «أربع بطاقات» · «بطاقة ذهبية»</li>
+      <li>«ارسم لي صقر» · «ارسم مخطط لخطوات التسجيل»</li>
+      <li>«المبيعات: يناير ١٠٠ وفبراير ١٥٠ ومارس ٢٠٠»</li>
+      <li>«الوضع الليلي» · «تراجع» · «الشريحة التالية» · «امسح كل شيء»</li>
+    </ul>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="print"></div>
+<script src="app.js"></script>
+</body>
+</html>

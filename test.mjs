@@ -14,9 +14,9 @@ p.on('console',m=>console.log('C',m.text()));const steps=[['أربع بطاقا�
  ['المبيعات في يناير مئة وفي فبراير مئة وخمسين وفي مارس مئتين وأربعين','chart'],['اعرض حصص السوق دائرة: نحن أربعين بالمية والمنافس الأول ثلاثين والباقي ثلاثين','pie'],
  ['سو جدول لثلاث باقات: الأساسية بعشرين درهم، المتقدمة بخمسين، والاحترافية بمئة','table'],
  ['اعرض أرقام: رضا العملاء ٩٥٪ وعدد المستخدمين ١٢ ألف ونمو ٣٠٪','stats'],
- ['ارسم لي بيت','house'],['ارسم لي صقر','falcon'],['ارسم مخطط لخطوات التسجيل في التطبيق','diagram'],
+ ['ارسم لي بيت','house'],['ارسم لي صقر','falcon'],['ارسم جمل','camel'],['ارسم نخلة','palm'],['ارسم سفينة داو','dhow'],['ارسم مسجد','mosque'],['ارسم علم الإمارات','flag'],['ارسم لي سيارة','car-ai'],['اعرض المبيعات بالأعمدة: الرياض ٣٠ ودبي ٥٠ والدوحة ٢٠','bar'],['رسم خطي لعدد الزوار: يناير ١٠ فبراير ٢٥ مارس ٤٠ أبريل ٦٥','line'],['ارسم مخطط لخطوات التسجيل في التطبيق','diagram'],
  ['ارسم لي خريطة','map'],['ارسم سهم','arrow'],['اعرض أيقونات للسرعة والأمان والدعم','icons'],['الوضع الليلي','dark'],['تراجع','undo']];
-for(const [t,nm] of steps){await say(t,nm, nm==='house'||nm==='falcon'?1500:0)}
+for(const [t,nm] of steps){await say(t,nm, /house|falcon|camel|palm|dhow|mosque|flag|car/.test(nm)?2200:0)}
 // drawing
 await p.click('#bDraw');await p.waitForTimeout(500);
 const box=await p.locator('#ink').boundingBox();
@@ -25,8 +25,8 @@ const circ=[];for(let i=0;i<=36;i++){const a=i/36*Math.PI*2;circ.push([195+70*Ma
 await stroke(circ);await stroke([[80,420],[150,415],[230,425],[310,418]]);await stroke([[290,400],[312,418],[288,440]]);
 await shot('ink');
 await p.click('#bTidy');await p.waitForTimeout(500);await p.waitForFunction(()=>!document.body.classList.contains('thinking'),null,{timeout:45000});await shot('tidy');
-await p.click('#bMenu');await shot('sheet');
+await p.click('#bMenu');await shot('sheet');await p.evaluate(()=>document.querySelector('#thumbs').scrollTo({left:-99999}));await shot('thumbs-start');
 await p.click('#bSave');await shot('saved');
-console.log(JSON.stringify(await p.evaluate(()=>window.__arshow.S.slides.map(s=>({t:s.title,b:s.blocks.map(x=>x.type+(x.items?':'+x.items.length:'')),ov:!!s.overlay})))));
+console.log(JSON.stringify(await p.evaluate(()=>window.__arshow.S.slides.map(s=>({t:s.title,b:s.blocks.map(x=>x.type+(x.kind?':'+x.kind:'')+(x.items?':'+x.items.length:'')),ov:!!s.overlay})))));
 console.log('ERRS',errs);
 await b.close();

@@ -61,7 +61,10 @@ function slideHTML(sl,withOv){
   if(sl.overlay&&withOv)h+=`<div class="overlay">${sl.overlay.paths?drawSVG(sl.overlay.paths,sl.overlay.vb,6):`<img src="${sl.overlay.png}" alt="">`}</div>`;
   return h;
 }
-let lastIdx=-1;
+let lastIdx=-1,lastText='';
+function chartKind(t,fallback){const n=norm(t);
+  if(/اعمد|عمود|عواميد|بار/.test(n))return 'bar';if(/دائري|دايري|كعكه|فطيره/.test(n))return 'pie';if(/خطي|خط بياني/.test(n))return 'line';
+  if(/نسب|حصص|حصه|توزيع|بالمي|٪|%/.test(n))return 'pie';if(/تطور|عبر الزمن|على مدى|مع الوقت|اتجاه|نمو .*(شهر|سن)/.test(n))return 'line';return 'bar'}
 function render(anim){
   document.body.className=document.body.className.replace(/t-\w+/,'t-'+S.theme);
   const sl=cur(),el=$('#slide');
@@ -102,7 +105,7 @@ function apply(actions,src){
       b.fresh=b.items.length;b.items.push(...items);mode=mode||'soft';continue}
     if(t==='raw'){let sl=cur();let b=sl.blocks[sl.blocks.length-1];if(!b||b.type!=='raw'){b={type:'raw',text:''};sl.blocks.push(b)}b.text=(b.text+' '+a.text).trim();mode=mode||'soft';continue}
     if(VIS.includes(t)){
-      const b=sanitize(a);if(!b)continue;let sl=cur();
+      const b=sanitize(a);if(!b)continue;if(b.type==='chart')b.kind=chartKind(lastText);let sl=cur();
       if(sl.blocks.some(x=>VIS.includes(x.type))||sl.blocks.length>2){const tt=null;sl=addSlide();mode='slide'}
       sl.blocks.push(b);mode=mode||'soft';continue}
   }
@@ -110,7 +113,7 @@ function apply(actions,src){
   render(mode==='slide'?'slide':false);return true;
 }
 const okD=d=>typeof d==='string'&&d.length<4000&&/^[MLCQAZHVSTmlcqazhvst0-9\s.,\-]+$/.test(d);
-const okC=c=>typeof c==='string'&&/^(#[0-9a-fA-F]{3,8}|none|currentColor)$/.test(c)?c:null;
+const okC=c=>typeof c==='string'&&/^(#[0-9a-fA-F]{3,8}|none|currentColor|rgba\([\d.,\s]+\))$/.test(c)?c:null;
 const okCol=c=>ORDER.includes(c)?c:'blue';
 function sanitize(a){
   const s=x=>String(x??'').slice(0,60);
@@ -121,7 +124,7 @@ function sanitize(a){
   case 'chart':{const d=(a.data||[]).map(x=>({label:s(x.label).slice(0,14),value:+x.value})).filter(x=>isFinite(x.value)&&x.value>=0);return d.length?{type:'chart',kind:['bar','pie','line'].includes(a.kind)?a.kind:'bar',title:s(a.title),data:d.slice(0,10)}:null}
   case 'table':{const h=(a.headers||[]).slice(0,5).map(s);const r=(a.rows||[]).slice(0,10).map(x=>(x||[]).slice(0,5).map(s));return h.length||r.length?{type:'table',title:s(a.title),headers:h,rows:r}:null}
   case 'icons':{const it=(a.items||[]).slice(0,9).map(x=>({emoji:s(x.emoji).slice(0,8),label:s(x.label)}));return it.length?{type:'icons',items:it}:null}
-  case 'draw':{const p=(a.paths||[]).filter(x=>okD(x.d)).slice(0,30).map(x=>({d:x.d,stroke:okC(x.stroke)||'currentColor',fill:okC(x.fill)||'none'}));return p.length?{type:'draw',title:s(a.title),paths:p}:null}
+  case 'draw':{const p=(a.paths||[]).filter(x=>okD(x.d)).slice(0,30).map(x=>({d:x.d,stroke:okC(x.stroke)||'currentColor',fill:okC(x.fill)||'none',w:(+x.w>0&&+x.w<14)?+x.w:undefined}));return p.length?{type:'draw',title:s(a.title),paths:p}:null}
   case 'diagram':{const n=(a.nodes||[]).slice(0,8).map(s).filter(Boolean);return n.length?{type:'diagram',title:s(a.title),nodes:n}:null}
   }return null;
 }
@@ -138,7 +141,8 @@ function local(text){
   if(/(الشريحه|الصفحه)\s*(السابقه|اللي قبل)|^السابق$/.test(n))return [{type:'prev'}];
   if(/(الوضع|المظهر|الثيم)\s*(الليلي|الداكن|المظلم)/.test(n))return [{type:'theme',name:'dark'}];
   if(/(الوضع|المظهر|الثيم)\s*(النهاري|الفاتح|الابيض)/.test(n))return [{type:'theme',name:'light'}];
-  if(/ارسم|مخطط|جدول|رسم بياني|نقاط/.test(n))return null;
+  if(/(ارسم|ارسملي|رسمه|رسمة|ارسمي)/.test(n)&&!/مخطط|بياني|جدول/.test(n)){const a=artFor(n);if(a)return [a];return null}
+  if(/مخطط|جدول|رسم بياني|نقاط/.test(n))return null;
   let m=n.match(/(\d+|اثنين|اثنتين|ثنتين|ثلاثه|ثلاث|اربعه|اربع|خمسه|خمس|سته|ست|سبعه|سبع|ثمانيه|ثماني|ثمان)\s*(بطاقات|بطاقه|كروت|كرت|مربعات|مربع)/);
   if(m){const k=Math.min(8,Math.max(1,parseInt(m[1])||NUMW[m[1]]||4));
     const named=[...n.matchAll(/(ازرق|زرقاء|اخضر|خضراء|برتقالي\S*|بنفسجي\S*|وردي\S*|زهري|ذهبي\S*|احمر|حمراء|فيروزي)/g)].map(x=>CW[x[1]]||CW[x[1].replace(/ه$/,'')]).filter(Boolean);
@@ -164,13 +168,13 @@ async function llm(text){
   finally{setThinking(false)}
 }
 function handleFinal(text){
-  text=text.trim();if(!text)return;
+  text=text.trim();if(!text)return;lastText=text;
   const loc=local(text);
   if(loc){apply(loc);return}
   if(S.raw)apply([{type:'raw',text}]);
   buf=(buf+' '+text).trim();clearTimeout(timer);
   const cmd=/ارسم|مخطط|جدول|رسم بياني|بطاق|لون|مظهر|عنوان/.test(norm(text));
-  timer=setTimeout(()=>{const t=buf;buf='';llm(t)},cmd?250:900);
+  timer=setTimeout(()=>{const t=buf;buf='';lastText=t;llm(t)},cmd?250:900);
 }
 
 /* ---------- speech ---------- */
@@ -208,7 +212,9 @@ $('#slideWrap').addEventListener('touchend',e=>{if(sx==null)return;const dx=e.ch
 
 /* sheet */
 function openSheet(){
-  $('#thumbs').innerHTML=S.slides.map((s,i)=>`<button class="th ${i===S.idx?'cur':''}" data-i="${i}"><small>${toAr(i+1)}</small>${esc(s.title||summ(s))}</button>`).join('');
+  const st=$('#stage').getBoundingClientRect(),W=st.width||390,H=st.height||640,TW=104,sc=TW/W;
+  $('#thumbs').innerHTML=S.slides.map((s,i)=>`<button class="th ${i===S.idx?'cur':''}" data-i="${i}" style="width:${TW}px;height:${Math.round(H*sc)}px" aria-label="شريحة ${toAr(i+1)}"><div class="mini" style="width:${W}px;height:${H}px;transform:scale(${sc});--tc:${HEX[s.tc]||'var(--fg)'};--acc:${HEX[s.tc]||'var(--blue)'}">${isEmpty(s)?'<div class="mini-empty">شريحة فارغة</div>':slideHTML(s,true)}</div><small>${toAr(i+1)}</small></button>`).join('');
+  setTimeout(()=>{const c=$('#thumbs .cur');c&&c.scrollIntoView({inline:'center',block:'nearest'})},30);
   $('#rawToggle').checked=S.raw;
   $('#themes').innerHTML=Object.entries(THEMES).map(([k,v])=>`<button class="t-${k} ${S.theme===k?'on':''}" data-t="${k}" style="background:var(--bg);color:var(--fg)">${v}</button>`).join('');
   listSaved();$('#sheet').hidden=false;
